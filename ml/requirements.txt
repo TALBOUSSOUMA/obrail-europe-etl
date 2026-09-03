@@ -1,0 +1,9 @@
+pandas>=2.2
+scikit-learn>=1.5
+xgboost>=2.1
+joblib>=1.4
+matplotlib>=3.9
+seaborn>=0.13
+SQLAlchemy>=2.0
+pg8000>=1.31
+python-dotenv>=1.0

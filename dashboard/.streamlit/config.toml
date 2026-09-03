@@ -1,0 +1,11 @@
+[theme]
+# Palette inspiree de l'ONS (Office for National Statistics, UK) Accessible
+# Colours - concue et testee pour un contraste conforme WCAG AA et la
+# distinction en cas de daltonisme (deuteranopie/protanopie). Reference a
+# citer dans le rapport technique (section accessibilite numerique).
+primaryColor = "#12436D"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F2F5F7"
+textColor = "#1A1A1A"
+font = "sans serif"
+base = "light"

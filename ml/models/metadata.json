@@ -1,0 +1,68 @@
+{
+  "modele_retenu": "random_forest",
+  "features_numeriques": [
+    "distance_km",
+    "duree_h"
+  ],
+  "features_categorielles": [
+    "service_type",
+    "type_train",
+    "nom_operateur",
+    "pays_origine",
+    "pays_destination",
+    "trajet_domestique"
+  ],
+  "cible": "frequence_semaine",
+  "metriques": [
+    {
+      "modele": "random_forest",
+      "meilleurs_hyperparametres": {
+        "model__max_depth": null,
+        "model__n_estimators": 100
+      },
+      "temps_entrainement_s": 211.9,
+      "mae_validation": 1.469,
+      "mae_test": 1.425,
+      "rmse_test": 1.82,
+      "r2_test": 0.201
+    },
+    {
+      "modele": "xgboost",
+      "meilleurs_hyperparametres": {
+        "model__learning_rate": 0.1,
+        "model__max_depth": 6,
+        "model__n_estimators": 100
+      },
+      "temps_entrainement_s": 2.4,
+      "mae_validation": 1.669,
+      "mae_test": 1.634,
+      "rmse_test": 1.856,
+      "r2_test": 0.169
+    },
+    {
+      "modele": "mlp",
+      "meilleurs_hyperparametres": {
+        "model__alpha": 0.001,
+        "model__hidden_layer_sizes": [
+          32
+        ]
+      },
+      "temps_entrainement_s": 15.1,
+      "mae_validation": 1.772,
+      "mae_test": 1.735,
+      "rmse_test": 1.954,
+      "r2_test": 0.079
+    },
+    {
+      "modele": "ridge",
+      "meilleurs_hyperparametres": {
+        "model__alpha": 0.1
+      },
+      "temps_entrainement_s": 1.4,
+      "mae_validation": 1.814,
+      "mae_test": 1.779,
+      "rmse_test": 1.972,
+      "r2_test": 0.062
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+variable,role,type,description
+distance_km,Feature,Numerique continue,Distance a vol d'oiseau entre gare d'origine et de destination
+duree_h,Feature,Numerique continue,Duree du trajet en heures
+service_type,Feature,Categorielle (2 modalites),Jour ou Nuit
+type_train,Feature,Categorielle (12 modalites),"Marque commerciale du service (TER, TGV inOui, Intercites de nuit...)"
+nom_operateur,Feature,Categorielle (39 modalites),Operateur ferroviaire exploitant la desserte
+pays_origine / pays_destination,Feature,Categorielle (26 modalites chacune),Codes pays ISO des gares de depart et d'arrivee
+trajet_domestique,Feature (derivee),Booleenne,Vrai si pays_origine == pays_destination
+frequence_semaine,Cible (target),Numerique discrete (0-7),Nombre de jours par semaine ou la desserte circule
+traction,Exclue,-,100% manquante (non fournie par le GTFS) - retiree des features
+trip_id,Exclue,Identifiant,"Cle technique, aucune valeur predictive - retiree des features"

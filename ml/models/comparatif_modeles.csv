@@ -1,0 +1,5 @@
+modele,meilleurs_hyperparametres,temps_entrainement_s,mae_validation,mae_test,rmse_test,r2_test
+random_forest,"{'model__max_depth': None, 'model__n_estimators': 100}",211.9,1.469,1.425,1.82,0.201
+xgboost,"{'model__learning_rate': 0.1, 'model__max_depth': 6, 'model__n_estimators': 100}",2.4,1.669,1.634,1.856,0.169
+mlp,"{'model__alpha': 0.001, 'model__hidden_layer_sizes': (32,)}",15.1,1.772,1.735,1.954,0.079
+ridge,{'model__alpha': 0.1},1.4,1.814,1.779,1.972,0.062

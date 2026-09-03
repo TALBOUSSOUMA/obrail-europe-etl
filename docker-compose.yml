@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: obrail_postgres
+    environment:
+      POSTGRES_USER: obrail
+      POSTGRES_PASSWORD: obrail
+      POSTGRES_DB: obrail
+    ports:
+      # Published on 5433, not 5432: a native PostgreSQL Windows service
+      # commonly claims 5432 on dev machines, which silently steals
+      # connections meant for this container.
+      - "5433:5432"
+    volumes:
+      - ./sql/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      - obrail_pgdata:/var/lib/postgresql/data
+
+volumes:
+  obrail_pgdata:

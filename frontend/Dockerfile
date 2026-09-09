@@ -30,5 +30,12 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
+# "127.0.0.1", not "localhost": BusyBox wget (this Alpine image) resolves
+# "localhost" to the IPv6 loopback (::1) and does not fall back to IPv4,
+# while nginx here only listens on 0.0.0.0 (IPv4) - using "localhost"
+# made this healthcheck fail permanently despite the server actually
+# working (verified: curl from the host on the published port always
+# succeeded). Caught by manually inspecting `docker inspect`'s health
+# log and testing both addresses directly inside the container.
 HEALTHCHECK --interval=15s --timeout=3s --start-period=5s --retries=5 \
-    CMD wget -q -O- http://localhost/ || exit 1
+    CMD wget -q -O- http://127.0.0.1/ || exit 1

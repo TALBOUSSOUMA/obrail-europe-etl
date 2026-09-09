@@ -1,11 +1,11 @@
 """
-TPRE622 - Livrable 1 : analyse exploratoire et tableau des variables retenues.
+TPRE622 - Deliverable 1: exploratory analysis and table of selected variables.
 
-Genere :
-- eda/variables_retenues.csv   (tableau des variables : role, type, description)
-- eda/distributions.png         (distribution de la cible et des variables numeriques)
+Generates:
+- eda/variables_retenues.csv   (variable table: role, type, description)
+- eda/distributions.png         (distribution of the target and numeric variables)
 - eda/frequence_par_categorie.png
-- eda/feature_importance.png    (variables les plus influentes selon le modele retenu)
+- eda/feature_importance.png    (most influential variables per the chosen model)
 """
 
 from pathlib import Path
@@ -50,12 +50,12 @@ VARIABLES = [
 def main():
     df = pd.read_csv(DATA_PATH)
 
-    # ---- Tableau des variables retenues -------------------------------
+    # ---- Table of selected variables ----------------------------------
     var_df = pd.DataFrame(VARIABLES)
     var_df.to_csv(EDA_DIR / "variables_retenues.csv", index=False)
     print(var_df.to_string(index=False))
 
-    # ---- Distributions --------------------------------------------------
+    # ---- Distributions ---------------------------------------------------
     fig, axes = plt.subplots(1, 3, figsize=(15, 4))
     sns.histplot(df["frequence_semaine"], bins=8, color=COLOR, ax=axes[0])
     axes[0].set_title("Distribution de la cible (frequence_semaine)")
@@ -67,7 +67,7 @@ def main():
     plt.savefig(EDA_DIR / "distributions.png", dpi=150)
     plt.close()
 
-    # ---- Frequence moyenne par type de train ---------------------------
+    # ---- Average frequency per train type -------------------------------
     plt.figure(figsize=(9, 5))
     order = df.groupby("type_train")["frequence_semaine"].mean().sort_values(ascending=False).index
     sns.barplot(data=df, x="frequence_semaine", y="type_train", order=order, color=COLOR, errorbar=None)
@@ -77,7 +77,7 @@ def main():
     plt.savefig(EDA_DIR / "frequence_par_categorie.png", dpi=150)
     plt.close()
 
-    # ---- Feature importance (modele deja entraine) ----------------------
+    # ---- Feature importance (already-trained model) ---------------------
     model_path = BASE_DIR / "models" / "modele_frequence.joblib"
     if model_path.exists():
         pipe = joblib.load(model_path)

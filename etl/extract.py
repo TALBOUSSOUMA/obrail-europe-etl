@@ -15,7 +15,7 @@ def extract_csv_sources(csv_paths: list[Path]) -> pd.DataFrame:
 
     Using a list (rather than a single path) is what makes the pipeline
     ready to aggregate several operators' exports later, as required by
-    the "centraliser l'information" objective of the cahier des charges.
+    the specifications' "centralize the information" objective.
     """
     frames = []
     for path in csv_paths:

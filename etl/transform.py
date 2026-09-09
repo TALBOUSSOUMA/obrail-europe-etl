@@ -64,8 +64,8 @@ class QualityReport:
 def clean_raw(raw_df: pd.DataFrame) -> tuple[pd.DataFrame, QualityReport]:
     """Apply data-quality rules to the flat raw dataframe.
 
-    Rules applied (each maps to a bullet of the "contraintes fonctionnelles"
-    section of the cahier des charges):
+    Rules applied (each maps to a bullet of the specifications' "functional
+    constraints" section):
       - trim whitespace on every text column
       - drop exact duplicate trip_id (keep first occurrence)
       - drop rows missing a field that is structurally required

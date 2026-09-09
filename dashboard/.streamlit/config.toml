@@ -1,8 +1,8 @@
 [theme]
-# Palette inspiree de l'ONS (Office for National Statistics, UK) Accessible
-# Colours - concue et testee pour un contraste conforme WCAG AA et la
-# distinction en cas de daltonisme (deuteranopie/protanopie). Reference a
-# citer dans le rapport technique (section accessibilite numerique).
+# Palette inspired by the ONS (Office for National Statistics, UK) Accessible
+# Colours - designed and tested for WCAG AA-compliant contrast and
+# distinction for color blindness (deuteranopia/protanopia). Reference to
+# cite in the technical report (digital accessibility section).
 primaryColor = "#12436D"
 backgroundColor = "#FFFFFF"
 secondaryBackgroundColor = "#F2F5F7"

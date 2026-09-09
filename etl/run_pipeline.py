@@ -6,7 +6,7 @@ Usage:
 
 Designed to be scheduled (cron, Airflow, GitHub Action...) so the data
 warehouse stays up to date without manual intervention, as required by
-the cahier des charges' "automatisation et reproductibilite" constraint.
+the specifications' "automation and reproducibility" constraint.
 """
 
 from pathlib import Path

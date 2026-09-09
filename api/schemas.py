@@ -3,6 +3,9 @@ Pydantic schemas: define the JSON shape returned by the API, decoupled
 from the SQL column names (French in the DB, kept French here too for
 consistency across the whole project - SQL, ETL and API all speak the
 same vocabulary, which matters when defending the data model).
+
+Note: field names themselves stay French (e.g. `pays_origine`) to match
+the database columns 1:1 - only comments/docstrings are in English.
 """
 
 import datetime
@@ -17,9 +20,11 @@ class DesserteOut(BaseModel):
     type_train: str
     nom_operateur: str
     gare_origine: str
-    pays_origine: str
+    pays_origine: str          # ISO code (e.g. "DE") - consistent with the ?pays_origine= filter on GET /dessertes
+    nom_pays_origine: str      # full name (e.g. "Allemagne") - for client-side display
     gare_destination: str
-    pays_destination: str
+    pays_destination: str      # ISO code
+    nom_pays_destination: str  # full name
     service_type: str
     heure_depart: datetime.time
     heure_arrivee: datetime.time
@@ -49,6 +54,17 @@ class OperateurOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id_operateur: int
     nom_operateur: str
+
+
+class GareOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    nom_gare: str
+    code_pays: str
+
+
+class TypeTrainOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    type_train: str
 
 
 class QualiteRunOut(BaseModel):

@@ -1,0 +1,9 @@
+# Minimal dependencies to LOAD and USE the already-trained model
+# (ml/predict.py), used by the API's Docker image.
+#
+# Deliberately lighter than ml/requirements.txt: the API doesn't need
+# xgboost, matplotlib or seaborn (useful only to TRAIN and EVALUATE
+# the models, see train_models.py and eda.py).
+pandas>=2.2
+scikit-learn>=1.5
+joblib>=1.4

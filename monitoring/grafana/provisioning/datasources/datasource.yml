@@ -1,0 +1,12 @@
+# Automatic provisioning: Grafana connects to Prometheus right from
+# startup, with no manual configuration needed from the evaluator.
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: obrail-prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true

@@ -7,8 +7,8 @@ control dashboard can track each run over time.
 
 Uses SQLAlchemy + pandas.to_sql, which keeps the code short and lets the
 same functions be reused unchanged if the target engine ever changes
-(e.g. testing against SQLite) — this is what the cahier des charges calls
-"interoperabilite".
+(e.g. testing against SQLite) — this is what the specifications call
+"interoperability".
 """
 
 import os
@@ -30,8 +30,8 @@ def get_engine():
 
     Centralizing connection config here (rather than hardcoding a DSN)
     is what makes the pipeline reproducible across machines/Docker
-    containers without touching the code — required by the cahier
-    des charges' "automatisation et reproductibilite" constraint.
+    containers without touching the code — required by the
+    specifications' "automation and reproducibility" constraint.
 
     Uses the pg8000 driver (pure Python) rather than psycopg2 (a C
     extension wrapping libpq). This sidesteps a real bug hit while
@@ -74,7 +74,7 @@ def load_star_schema(tables: dict[str, pd.DataFrame], engine) -> None:
 
 def log_quality_run(report, engine) -> None:
     """Insert one row per ETL execution into log_qualite, feeding the
-    control dashboard requested in the cahier des charges.
+    control dashboard requested in the specifications.
     """
     with engine.begin() as conn:
         conn.execute(

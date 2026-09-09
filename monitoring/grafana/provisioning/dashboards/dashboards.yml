@@ -1,0 +1,14 @@
+# Tells Grafana to automatically load, at startup, any .json file
+# dropped into this same folder (obrail-api.json) as a ready-to-use
+# dashboard - the evaluator has nothing to import by hand.
+apiVersion: 1
+
+providers:
+  - name: ObRail
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards

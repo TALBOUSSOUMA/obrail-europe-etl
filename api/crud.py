@@ -11,8 +11,8 @@ from sqlalchemy.orm import Session
 BASE_SELECT = """
     SELECT
         d.trip_id, l.nom_ligne, l.type_train, o.nom_operateur,
-        go.nom_gare AS gare_origine, po.nom_pays AS pays_origine,
-        gd.nom_gare AS gare_destination, pdest.nom_pays AS pays_destination,
+        go.nom_gare AS gare_origine, po.code_pays AS pays_origine, po.nom_pays AS nom_pays_origine,
+        gd.nom_gare AS gare_destination, pdest.code_pays AS pays_destination, pdest.nom_pays AS nom_pays_destination,
         d.service_type, d.heure_depart, d.heure_arrivee, d.distance_km, d.duree_h,
         d.emission_gco2e_pkm, d.emission_totale_gco2e, d.frequence_semaine,
         d.traction, s.nom_source
@@ -51,8 +51,13 @@ def _build_filters(
         clauses.append("gd.nom_gare ILIKE :ville_arrivee")
         params["ville_arrivee"] = f"%{ville_arrivee}%"
     if type_train:
+        # Exact match (no %...%): the frontend now sends one of the exact
+        # values from /types-train via a dropdown, and a partial ILIKE
+        # would match "Intercites" against "Intercites de nuit" for
+        # example - still case-insensitive though, in case the endpoint
+        # is called directly (Swagger, Postman...).
         clauses.append("l.type_train ILIKE :type_train")
-        params["type_train"] = f"%{type_train}%"
+        params["type_train"] = type_train
     if service_type:
         clauses.append("d.service_type = :service_type")
         params["service_type"] = service_type
@@ -117,6 +122,23 @@ def list_pays(db: Session):
 def list_operateurs(db: Session):
     return db.execute(
         text("SELECT id_operateur, nom_operateur FROM obrail.operateur ORDER BY nom_operateur")
+    ).mappings().all()
+
+
+def list_gares(db: Session):
+    """Station reference data (756 rows) - feeds the frontend's
+    departure/arrival city filter autocomplete. Too many stations for a
+    classic dropdown, hence a <datalist> rather than a <select>."""
+    return db.execute(
+        text("SELECT nom_gare, code_pays FROM obrail.gare ORDER BY nom_gare")
+    ).mappings().all()
+
+
+def list_types_train(db: Session):
+    """Distinct train types (about a dozen) - a short, closed list, so a
+    real <select> on the frontend rather than autocomplete."""
+    return db.execute(
+        text("SELECT DISTINCT type_train FROM obrail.ligne ORDER BY type_train")
     ).mappings().all()
 
 

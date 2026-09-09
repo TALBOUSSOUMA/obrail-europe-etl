@@ -1,10 +1,10 @@
 """
-TPRE622 - Script de prediction, simulant la future integration API.
+TPRE622 - Prediction script, simulating the future API integration.
 
-Charge le modele sauvegarde (joblib) et l'expose via une fonction predict()
-reutilisable telle quelle par l'endpoint FastAPI /predict.
+Loads the saved model (joblib) and exposes it via a predict() function
+reused as-is by the FastAPI /predict endpoint.
 
-Usage en ligne de commande (demo) :
+Command-line usage (demo):
     python predict.py --distance_km 850 --duree_h 6.5 --type_train "TGV inOui" \\
         --service_type Jour --nom_operateur SNCF --pays_origine FR --pays_destination FR
 """
@@ -17,7 +17,7 @@ import joblib
 import pandas as pd
 
 MODEL_PATH = Path(__file__).resolve().parent / "models" / "modele_frequence.joblib"
-_model = None  # charge une seule fois (cache module-level), reutilise a chaque appel
+_model = None  # loaded only once (module-level cache), reused on every call
 
 
 def get_model():
@@ -36,12 +36,12 @@ def predict(
     pays_origine: str,
     pays_destination: str,
 ) -> float:
-    """Predit la frequence hebdomadaire (0-7) d'une desserte hypothetique.
+    """Predicts the weekly frequency (0-7) of a hypothetical rail service.
 
-    Les noms et l'ordre des colonnes doivent correspondre exactement a
-    ceux utilises pendant l'entrainement (train_models.py) - le pipeline
-    scikit-learn sauvegarde inclut le preprocessing (encodage, mise a
-    l'echelle), donc les valeurs brutes suffisent en entree.
+    Column names and order must match exactly those used during
+    training (train_models.py) - the saved scikit-learn pipeline
+    includes preprocessing (encoding, scaling), so raw values are
+    enough as input.
     """
     model = get_model()
     trajet_domestique = pays_origine == pays_destination
@@ -56,8 +56,8 @@ def predict(
         "trajet_domestique": trajet_domestique,
     }])
     pred = model.predict(row)[0]
-    # la frequence reelle est un entier 0-7 ; on borne et arrondit la
-    # sortie du regresseur pour qu'elle reste interpretable metier
+    # the real frequency is an integer 0-7; the regressor's output is
+    # clamped and rounded so it stays interpretable from a business standpoint
     return round(max(0, min(7, pred)), 1)
 
 

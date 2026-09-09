@@ -1,23 +1,23 @@
 """
-ObRail Europe - Tableau de bord de controle (livrable n.6 du cahier des charges).
+ObRail Europe - Control dashboard (deliverable #6 of the specifications).
 
-Consomme l'API REST (livrable n.4) plutot que la base directement : c'est
-l'usage prevu par le cahier des charges ("permettre l'exploitation du jeu
-de donnees par les autres composants du projet"), et ca decouple le
-dashboard de tout detail d'implementation de la base.
+Consumes the REST API (deliverable #4) rather than the database directly:
+this is the usage the specifications intend ("allow the dataset to be
+exploited by the project's other components"), and it decouples the
+dashboard from any implementation detail of the database.
 
-Accessibilite numerique (exigence explicite du cahier des charges,
-reference : RGAA / WCAG 2.1 niveau AA) :
-- palette de couleurs inspiree de l'ONS Accessible Colours (UK Office for
-  National Statistics), concue pour rester distinguable en cas de
-  daltonisme et respecter un contraste suffisant sur fond blanc
-- aucune information n'est portee UNIQUEMENT par la couleur : chaque
-  graphique a des axes nommes, des etiquettes de valeur, et un resume
-  textuel juste en dessous (equivalent a un texte alternatif)
-- les tableaux de donnees brutes restent toujours consultables a cote de
-  chaque graphique, pour un acces non-visuel aux memes chiffres
-- taille de police augmentee sur les graphiques (defaut Plotly trop petit
-  pour rester confortablement lisible)
+Digital accessibility (explicit requirement of the specifications,
+reference: RGAA / WCAG 2.1 level AA):
+- color palette inspired by the ONS Accessible Colours (UK Office for
+  National Statistics), designed to stay distinguishable for color
+  blindness and keep sufficient contrast on a white background
+- no information is conveyed by color ALONE: every chart has named
+  axes, value labels, and a text summary right below it (equivalent to
+  alt text)
+- raw data tables always stay available next to each chart, for
+  non-visual access to the same figures
+- increased font size on charts (Plotly's default is too small to stay
+  comfortably readable)
 
 Run with:
     streamlit run app.py
@@ -32,18 +32,18 @@ import streamlit as st
 
 API_URL = os.getenv("OBRAIL_API_URL", "http://localhost:8001")
 
-# Palette ONS Accessible Colours - testee WCAG AA + distinction daltonisme.
-COLOR_JOUR = "#F46A25"     # orange fonce
-COLOR_NUIT = "#12436D"     # bleu marine fonce
-COLOR_BAR = "#28A197"      # sarcelle (barres de volume)
-COLOR_LINE = "#801650"     # bordeaux (courbe d'evolution)
+# ONS Accessible Colours palette - tested for WCAG AA + color-blindness distinction.
+COLOR_JOUR = "#F46A25"     # dark orange
+COLOR_NUIT = "#12436D"     # dark navy blue
+COLOR_BAR = "#28A197"      # teal (volume bars)
+COLOR_LINE = "#801650"     # burgundy (trend line)
 
 st.set_page_config(page_title="ObRail Europe - Tableau de bord", layout="wide")
 
 
 def style_fig(fig, height: int = 420):
-    """Applique une mise en forme homogene et lisible a toutes les figures :
-    police plus grande que le defaut Plotly, marges confortables."""
+    """Applies consistent, readable formatting to every figure: a larger
+    font than Plotly's default, comfortable margins."""
     fig.update_layout(
         font=dict(size=14),
         title_font_size=18,
@@ -67,7 +67,7 @@ st.caption(
 )
 
 # ---------------------------------------------------------------------
-# Section 1: Qualite du dernier passage ETL (KPI + historique)
+# Section 1: Quality of the latest ETL run (KPIs + history)
 # ---------------------------------------------------------------------
 st.header("1. Qualité des données (dernières exécutions ETL)")
 
@@ -93,12 +93,12 @@ col4.metric(
     help="Part des lignes lues qui ont passé le nettoyage et ont été chargées en base "
          "(nb_lignes_chargees / nb_lignes_lues). Ne mesure PAS si tous les champs sont remplis.",
 )
-# Indicateur complementaire, calcule ici a partir de nb_valeurs_manquantes :
-# le taux de lignes conservees (ci-dessus) peut valoir 100% alors que certains
-# CHAMPS secondaires (distance, emissions...) restent vides sur quelques lignes -
-# c'est un indicateur différent, pas une contradiction. On l'affiche a part pour
-# eviter la confusion entre "la ligne a ete gardee" et "tous ses champs sont remplis".
-NB_CHAMPS_SUIVIS = 6  # cf. tracked_cols dans transform.clean_raw()
+# Complementary indicator, computed here from nb_valeurs_manquantes:
+# the row-retention rate (above) can be 100% even though some secondary
+# FIELDS (distance, emissions...) remain empty on a few rows - this is a
+# different indicator, not a contradiction. Shown separately to avoid
+# confusing "the row was kept" with "all of its fields are filled in".
+NB_CHAMPS_SUIVIS = 6  # see tracked_cols in transform.clean_raw()
 taux_champs_renseignes = 100 - (
     100 * latest["nb_valeurs_manquantes"] / (latest["nb_lignes_lues"] * NB_CHAMPS_SUIVIS)
 )
@@ -133,7 +133,7 @@ with st.expander("Voir le détail de chaque exécution (données brutes)"):
     st.dataframe(df_quality, width="stretch")
 
 # ---------------------------------------------------------------------
-# Section 2: Repartition Jour / Nuit
+# Section 2: Day / Night breakdown
 # ---------------------------------------------------------------------
 st.header("2. Répartition des dessertes : Jour vs Nuit")
 
@@ -161,7 +161,7 @@ with col_b:
     )
 
 # ---------------------------------------------------------------------
-# Section 3: Volume par operateur
+# Section 3: Volume per operator
 # ---------------------------------------------------------------------
 st.header("3. Volume de données collectées par opérateur")
 
@@ -188,7 +188,7 @@ with st.expander("Voir tous les opérateurs (données brutes)"):
     st.dataframe(df_ops, width="stretch")
 
 # ---------------------------------------------------------------------
-# Section 4: Couverture par pays
+# Section 4: Coverage per country
 # ---------------------------------------------------------------------
 st.header("4. Couverture géographique")
 

@@ -1,22 +1,21 @@
 """
-Extraction du jeu de donnees pour la modelisation (TPRE622).
+Dataset extraction for modeling (TPRE622).
 
-Enjeu retenu : anticiper la demande en mobilite ferroviaire, en predisant
-la frequence hebdomadaire (frequence_semaine) d'une desserte a partir de
-ses caracteristiques structurelles (distance, duree, type de train,
-service jour/nuit, pays).
+Problem chosen: anticipate rail mobility demand, by predicting a rail
+service's weekly frequency (frequence_semaine) from its structural
+characteristics (distance, duration, train type, day/night service,
+country).
 
-Justification du choix :
-- frequence_semaine est deja disponible pour les 38 412 dessertes reelles
-  (pas de nouvelle collecte necessaire, conforme a "vous pouvez reutiliser
-  vos derniers travaux" du cahier des charges TPRE622)
-- Pas de fuite de donnee (data leakage) : contrairement a l'emission CO2
-  (calculee par une formule deterministe a partir de la distance, donc
-  triviale a "predire"), la frequence resulte de choix commerciaux des
-  operateurs, un vrai signal a apprendre.
-- Utilite metier directe : identifie les lignes sous-exploitees ou a fort
-  potentiel, en lien avec l'enjeu "detecter les zones de sous-desserte"
-  egalement propose par le cahier des charges.
+Justification for this choice:
+- frequence_semaine is already available for the 38,412 real rail
+  services (no new collection needed, consistent with the "you may
+  reuse your latest work" clause of the TPRE622 specifications)
+- No data leakage: unlike CO2 emissions (computed with a deterministic
+  formula from distance, hence trivial to "predict"), frequency results
+  from operators' commercial choices - a genuine signal to learn.
+- Direct business value: identifies underused or high-potential lines,
+  tying into the "detect under-served areas" problem also proposed by
+  the specifications.
 """
 
 import os
@@ -24,10 +23,10 @@ import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
-# Charge les variables depuis le .env a la racine du projet (meme mecanisme
-# que etl/load.py) - sans ca, ce script retombe sur le port 5432 par defaut
-# et se connecte au mauvais serveur PostgreSQL (le service Windows natif,
-# pas le conteneur Docker sur le port 5433).
+# Loads variables from the .env file at the project root (same mechanism
+# as etl/load.py) - without this, this script falls back to the default
+# port 5432 and connects to the wrong PostgreSQL server (the native
+# Windows service, not the Docker container on port 5433).
 load_dotenv()
 
 engine = create_engine(

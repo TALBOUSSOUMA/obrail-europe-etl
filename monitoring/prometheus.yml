@@ -1,0 +1,14 @@
+# Prometheus configuration: queries the API every 5s on /metrics
+# (exposed by prometheus-fastapi-instrumentator, see api/main.py).
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: obrail-api
+    metrics_path: /metrics
+    static_configs:
+      # "api" = the service name in docker-compose.yml: Docker resolves
+      # this name to the container's IP address on the internal network
+      # automatically created by docker compose - no hardcoded IP needed.
+      - targets: ["api:8000"]

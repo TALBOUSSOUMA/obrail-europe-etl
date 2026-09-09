@@ -1,22 +1,22 @@
 """
-TPRE622 - Entrainement et comparaison de plusieurs modeles candidats.
+TPRE622 - Training and comparison of several candidate models.
 
-Enjeu : predire frequence_semaine (0 a 7) a partir des caracteristiques
-structurelles d'une desserte. Tache de regression (la cible est un
-comptage discret mais borne et ordonne ; la regression donne une
-prediction continue interpretable, arrondie si besoin - une alternative
-classification est discutee dans le rapport).
+Problem: predict frequence_semaine (0 to 7) from a rail service's
+structural characteristics. Regression task (the target is a discrete
+but bounded, ordered count; regression gives an interpretable
+continuous prediction, rounded if needed - a classification
+alternative is discussed in the report).
 
-Modeles compares (conformement au cahier des charges : "regression,
-RandomForest, boosting, reseaux de neurones simples") :
-    1. Regression lineaire regularisee (Ridge)   -> baseline interpretable
-    2. Random Forest Regressor                    -> non-lineaire, robuste
-    3. Gradient Boosting (XGBoost)                 -> etat de l'art tabulaire
-    4. MLP (reseau de neurones simple)             -> comparaison deep learning
+Models compared (per the specifications: "regression, RandomForest,
+boosting, simple neural networks"):
+    1. Regularized linear regression (Ridge)   -> interpretable baseline
+    2. Random Forest Regressor                  -> non-linear, robust
+    3. Gradient Boosting (XGBoost)               -> tabular state of the art
+    4. MLP (simple neural network)               -> deep learning comparison
 
-Chaque modele est optimise par recherche d'hyperparametres (GridSearchCV)
-avec validation croisee (5 folds), puis evalue sur un jeu de test jamais
-vu pendant l'entrainement.
+Each model is tuned via hyperparameter search (GridSearchCV) with
+cross-validation (5 folds), then evaluated on a test set never seen
+during training.
 """
 
 import json
@@ -36,7 +36,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from xgboost import XGBRegressor
 
-RANDOM_STATE = 42  # graine fixee pour la reproductibilite (exigee par le cahier des charges)
+RANDOM_STATE = 42  # fixed seed for reproducibility (required by the specifications)
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_PATH = BASE_DIR.parent / "data" / "ml_dataset.csv"
@@ -53,7 +53,7 @@ TARGET = "frequence_semaine"
 
 def load_data():
     df = pd.read_csv(DATA_PATH)
-    df = df.drop(columns=["trip_id", "traction"])  # ID non-predictif ; traction 100% vide
+    df = df.drop(columns=["trip_id", "traction"])  # non-predictive ID; traction is 100% empty
     X = df[NUMERIC_FEATURES + CATEGORICAL_FEATURES]
     y = df[TARGET]
     return X, y
@@ -102,7 +102,7 @@ def main():
         X, y, test_size=0.2, random_state=RANDOM_STATE
     )
     X_train, X_val, y_train, y_val = train_test_split(
-        X_train, y_train, test_size=0.125, random_state=RANDOM_STATE  # 0.125*0.8=10% de l'ensemble total
+        X_train, y_train, test_size=0.125, random_state=RANDOM_STATE  # 0.125*0.8=10% of the total set
     )
     print(f"Train: {len(X_train)} | Validation: {len(X_val)} | Test: {len(X_test)}")
 

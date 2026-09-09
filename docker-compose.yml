@@ -1,19 +1,117 @@
+# Starts the whole application with a single command:
+#   docker compose up --build
+#
+# Services and ports published on the host machine:
+#   - postgres   (5433)  database (internal use, debugging only)
+#   - api        (8001)  FastAPI REST API - interactive docs at /docs
+#   - frontend   (8081)  web interface (React, served by nginx)
+#   - prometheus (9091)  raw metrics collected from the API
+#   - grafana    (3001)  supervision dashboard (credentials below)
+#
+# Ports deliberately different from 8000/5173/9090/3000: ANOTHER Docker
+# stack (the team's mspr-prod-obrail repo) already runs on this machine
+# with those ports. Both projects can thus run at the same time without
+# conflict.
+#
+# No fixed "container_name" either, for the same reason: Docker Compose
+# then names every container with the project's prefix
+# ("obrail-europe-etl-api-1"...), which cannot collide with another
+# project's containers even if it uses identical service names
+# (postgres, api, frontend...).
+#
+# Prerequisite: the database must contain data for the API and frontend
+# to be useful (not just the schema). After the first `docker compose
+# up`, run once (see README.md):
+#   pip install -r requirements.txt
+#   POSTGRES_PORT=5433 python etl/run_pipeline.py
+
 services:
   postgres:
     image: postgres:16
-    container_name: obrail_postgres
     environment:
       POSTGRES_USER: obrail
       POSTGRES_PASSWORD: obrail
       POSTGRES_DB: obrail
     ports:
       # Published on 5433, not 5432: a native PostgreSQL Windows service
-      # commonly claims 5432 on dev machines, which silently steals
-      # connections meant for this container.
+      # commonly claims 5432 on development machines, which would
+      # silently steal connections meant for the container.
       - "5433:5432"
     volumes:
       - ./sql/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
       - obrail_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U obrail -d obrail"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    environment:
+      POSTGRES_USER: obrail
+      POSTGRES_PASSWORD: obrail
+      # "postgres" = the service name above: on the internal network
+      # created by Docker Compose, every service is reachable by the
+      # others via its name, like a DNS entry - no need to know an IP.
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: obrail
+    ports:
+      - "8001:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # URL seen by the BROWSER (not by the other containers): must
+        # match the published port of the "api" service above.
+        VITE_API_URL: http://localhost:8001
+    ports:
+      - "8081:80"
+    depends_on:
+      - api
+
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9091:9090"
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    environment:
+      # Fixed admin username (not a secret in itself); password read from
+      # the GRAFANA_ADMIN_PASSWORD environment variable (defined in .env,
+      # not committed - see .env.example) with a fallback to "obrail" if
+      # it's absent, so `docker compose up` also works without a
+      # configured .env (demo/evaluation). Change before any real use
+      # (see the security section of the technical report).
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-obrail}
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - obrail_grafana_data:/var/lib/grafana
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
 
 volumes:
   obrail_pgdata:
+  obrail_grafana_data:

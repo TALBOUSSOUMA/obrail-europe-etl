@@ -12,6 +12,11 @@ venv/
 node_modules/
 dist/
 
+# Playwright (E2E) artifacts - local run results, not source
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+
 # OS
 .DS_Store
 Thumbs.db

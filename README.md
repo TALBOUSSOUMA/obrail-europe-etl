@@ -90,10 +90,19 @@ pytest -v
 # Frontend : verification du build de production
 cd frontend
 npm run build
+
+# End-to-end (Playwright) : necessite toute la pile Docker demarree et
+# alimentee (docker compose up -d, voir plus haut) - les tests s'executent
+# contre http://localhost:8081, le vrai frontend conteneurise.
+cd frontend
+npm install
+npx playwright install chromium   # une seule fois
+npm run test:e2e
 ```
 
-Ces mêmes commandes tournent automatiquement sur chaque push via GitHub
-Actions (voir [.github/workflows/ci.yml](.github/workflows/ci.yml)).
+Ces mêmes commandes (sauf E2E, pour l'instant local uniquement) tournent
+automatiquement sur chaque push via GitHub Actions (voir
+[.github/workflows/ci.yml](.github/workflows/ci.yml)).
 
 ## Architecture du dépôt
 
